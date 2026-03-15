@@ -1,0 +1,9 @@
+# Only track web/ folder and config for Render deploy
+# Exclude everything else
+*
+
+# Include web site
+!.gitignore
+!render.yaml
+!web/
+!web/**

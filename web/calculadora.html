@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOMNIUM - Simulá a tu medida</title>
+<style>
+:root { --navy: #1B3A5C; --gold: #C49A3C; --light-gold: #F5E6C8; --dark: #333; --light: #F5F5F5; --white: #fff; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f0; color: var(--dark); }
+.header { background: var(--navy); color: var(--white); text-align: center; padding: 2rem 1rem; }
+.header h1 { font-size: 2.2rem; letter-spacing: 6px; margin-bottom: 0.3rem; }
+.header .tagline { color: var(--gold); font-style: italic; font-size: 1rem; }
+.header .subtitle { font-size: 1.4rem; margin-top: 1rem; font-weight: 300; }
+.container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+
+/* Controls */
+.controls { background: var(--white); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-left: 4px solid var(--gold); }
+.controls h2 { color: var(--navy); font-size: 1.1rem; margin-bottom: 1rem; }
+.controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; }
+.control-group label { display: block; font-weight: 600; color: var(--navy); margin-bottom: 0.3rem; font-size: 0.85rem; }
+.control-group select, .control-group input[type=range] { width: 100%; }
+.control-group select { padding: 0.5rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
+.range-value { text-align: center; font-weight: 700; color: var(--navy); font-size: 1.3rem; margin-top: 0.3rem; }
+input[type=range] { -webkit-appearance: none; height: 8px; border-radius: 4px; background: #ddd; outline: none; margin-top: 0.5rem; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--gold); cursor: pointer; border: 2px solid var(--navy); }
+
+/* Table */
+.table-wrap { background: var(--white); border-radius: 12px; overflow-x: auto;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+thead th { background: var(--navy); color: var(--white); padding: 0.7rem 0.5rem; text-align: center;
+  position: sticky; top: 0; font-size: 0.82rem; }
+tbody td { padding: 0.6rem 0.5rem; text-align: center; border-bottom: 1px solid #eee; }
+tbody tr:nth-child(even) { background: var(--light); }
+tbody tr:hover { background: var(--light-gold); }
+td.unit { font-weight: 600; color: var(--navy); }
+td.cuota { font-weight: 700; color: var(--navy); font-size: 1rem; }
+td.cuota-am { font-weight: 700; color: var(--gold); font-size: 1rem; }
+td.saldo { font-weight: 600; color: #c0392b; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .header h1 { font-size: 1.6rem; letter-spacing: 3px; }
+  .controls-grid { grid-template-columns: 1fr; }
+  table { font-size: 0.78rem; }
+}
+
+.footer { text-align: center; padding: 1.5rem; color: #999; font-size: 0.8rem; margin-top: 2rem; }
+.note { background: var(--light-gold); border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 1rem;
+  font-size: 0.85rem; color: var(--navy); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>SOMNIUM</h1>
+  <div class="tagline">Donde tus sueños encuentran su hogar</div>
+  <div class="subtitle">Simulá a tu medida</div>
+</div>
+
+<div class="container">
+  <div class="controls">
+    <h2>Configurá tu financiación</h2>
+    <div class="controls-grid">
+      <div class="control-group">
+        <label>Sistema de amortización</label>
+        <select id="sistema" onchange="recalc()">
+          <option value="frances">Francés (cuota fija)</option>
+          <option value="americano">Americano (solo intereses)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Anticipo</label>
+        <input type="range" id="anticipo" min="25" max="80" value="25" step="5" oninput="recalc()">
+        <div class="range-value" id="anticipo-val">25%</div>
+      </div>
+      <div class="control-group">
+        <label>Plazo</label>
+        <input type="range" id="plazo" min="1" max="20" value="10" step="1" oninput="recalc()">
+        <div class="range-value" id="plazo-val">10 años</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note" id="sistema-note">
+    <b>Sistema Francés:</b> Cuota fija mensual que incluye capital e intereses. La cuota no cambia durante todo el plazo.
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Unidad</th>
+          <th>Tipo</th>
+          <th>m²</th>
+          <th>Valor Financiado</th>
+          <th>Anticipo USD</th>
+          <th>Cuota Mensual</th>
+          <th id="th-saldo" style="display:none">Saldo al Vencimiento</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    SOMNIUM &bull; Av. Coronel Díaz 1736, CABA &bull; Tasa: 11% anual fija en USD<br>
+    Las cuotas son estimativas y pueden variar según condiciones finales de la operación.
+  </div>
+</div>
+
+<script>
+const ANNUAL_RATE = 0.11;
+const MONTHLY_RATE = ANNUAL_RATE / 12;
+const PRICE_CONTADO = 3800;
+const PRICES_BY_TERM = {5: 3850, 10: 3900, 15: 3950, 20: 4000};
+
+function priceForYears(y) {
+  if (y <= 5) return PRICES_BY_TERM[5];
+  if (y <= 10) return PRICES_BY_TERM[10];
+  if (y <= 15) return PRICES_BY_TERM[15];
+  return PRICES_BY_TERM[20];
+}
+
+const units = [
+  {code:"P1-103", tipo:"3 Ambientes", m2:90},
+  {code:"P3-303", tipo:"1 Ambiente", m2:36},
+  {code:"P5-503", tipo:"1 Ambiente", m2:36.14},
+  {code:"P6-603", tipo:"1 Ambiente", m2:36.14},
+  {code:"P7-701", tipo:"1 Ambiente", m2:40},
+  {code:"P7-703", tipo:"1 Ambiente", m2:36.14},
+  {code:"P8-801", tipo:"1 Ambiente", m2:40},
+  {code:"P8-802", tipo:"Monoambiente", m2:31},
+  {code:"P8-803", tipo:"3 Ambientes", m2:71},
+  {code:"P9-901", tipo:"1 Ambiente", m2:40},
+  {code:"P9-902", tipo:"Monoambiente", m2:31},
+  {code:"P9-903", tipo:"3 Ambientes", m2:69},
+  {code:"P10-1001", tipo:"1 Ambiente", m2:40},
+  {code:"P10-1003", tipo:"3 Ambientes", m2:69},
+  {code:"P12-1201", tipo:"Monoambiente", m2:45},
+];
+
+function fmtUSD(v) {
+  return 'US$ ' + Math.round(v).toLocaleString('es-AR');
+}
+
+function frenchPMT(principal, r, n) {
+  if (principal <= 0 || n <= 0) return 0;
+  return principal * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
+}
+
+function recalc() {
+  const sistema = document.getElementById('sistema').value;
+  const anticipo = parseInt(document.getElementById('anticipo').value);
+  const plazo = parseInt(document.getElementById('plazo').value);
+
+  document.getElementById('anticipo-val').textContent = anticipo + '%';
+  document.getElementById('plazo-val').textContent = plazo + (plazo === 1 ? ' año' : ' años');
+
+  const isAmerican = sistema === 'americano';
+  document.getElementById('th-saldo').style.display = isAmerican ? '' : 'none';
+
+  const noteEl = document.getElementById('sistema-note');
+  if (isAmerican) {
+    noteEl.innerHTML = '<b>Sistema Americano:</b> La cuota mensual incluye únicamente intereses. El capital se abona en su totalidad al vencimiento del plazo.';
+  } else {
+    noteEl.innerHTML = '<b>Sistema Francés:</b> Cuota fija mensual que incluye capital e intereses. La cuota no cambia durante todo el plazo.';
+  }
+
+  const priceM2 = priceForYears(plazo);
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+
+  for (const u of units) {
+    const valor = u.m2 * priceM2;
+    const antUSD = valor * anticipo / 100;
+    const principal = valor - antUSD;
+    let cuota, saldo;
+
+    if (isAmerican) {
+      cuota = principal * MONTHLY_RATE;
+      saldo = principal;
+    } else {
+      cuota = frenchPMT(principal, MONTHLY_RATE, plazo * 12);
+      saldo = 0;
+    }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      `<td class="unit">${u.code}</td>` +
+      `<td>${u.tipo}</td>` +
+      `<td>${Math.round(u.m2)} m²</td>` +
+      `<td>${fmtUSD(valor)}</td>` +
+      `<td>${fmtUSD(antUSD)}</td>` +
+      `<td class="${isAmerican ? 'cuota-am' : 'cuota'}">${fmtUSD(cuota)}</td>` +
+      (isAmerican ? `<td class="saldo">${fmtUSD(saldo)}</td>` : '');
+    tbody.appendChild(tr);
+  }
+}
+
+recalc();
+</script>
+</body>
+</html>
