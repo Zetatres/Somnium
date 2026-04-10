@@ -7,7 +7,10 @@
 <style>
 :root { --navy: #1B3A5C; --gold: #C49A3C; --light-gold: #F5E6C8; --dark: #333; --light: #F5F5F5; --white: #fff; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f0; color: var(--dark); }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f0; color: var(--dark);
+  position: relative; }
+body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: url('images/bg.jpg') center/cover no-repeat; opacity: 0.08; z-index: -1; pointer-events: none; }
 .header { background: var(--navy); color: var(--white); text-align: center; padding: 2rem 1rem; }
 .header h1 { font-size: 2.2rem; letter-spacing: 6px; margin-bottom: 0.3rem; }
 .header .tagline { color: var(--gold); font-style: italic; font-size: 1rem; }
@@ -38,8 +41,6 @@ tbody tr:nth-child(even) { background: var(--light); }
 tbody tr:hover { background: var(--light-gold); }
 td.unit { font-weight: 600; color: var(--navy); }
 td.cuota { font-weight: 700; color: var(--navy); font-size: 1rem; }
-td.cuota-am { font-weight: 700; color: var(--gold); font-size: 1rem; }
-td.saldo { font-weight: 600; color: #c0392b; }
 
 /* Responsive */
 @media (max-width: 600px) {
@@ -69,7 +70,6 @@ td.saldo { font-weight: 600; color: #c0392b; }
         <label>Sistema de amortización</label>
         <select id="sistema" onchange="recalc()">
           <option value="frances">Francés (cuota fija)</option>
-          <option value="americano">Americano (solo intereses)</option>
         </select>
       </div>
       <div class="control-group">
@@ -85,7 +85,7 @@ td.saldo { font-weight: 600; color: #c0392b; }
     </div>
   </div>
 
-  <div class="note" id="sistema-note">
+  <div class="note">
     <b>Sistema Francés:</b> Cuota fija mensual que incluye capital e intereses. La cuota no cambia durante todo el plazo.
   </div>
 
@@ -99,7 +99,6 @@ td.saldo { font-weight: 600; color: #c0392b; }
           <th>Valor Financiado</th>
           <th>Anticipo USD</th>
           <th>Cuota Mensual</th>
-          <th id="th-saldo" style="display:none">Saldo al Vencimiento</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -125,22 +124,21 @@ function priceForYears(y) {
   return PRICES_BY_TERM[20];
 }
 
+// Contado price overrides (unit code -> USD)
+const CONTADO_OVERRIDES = {"P7-704": 126300};
+
 const units = [
   {code:"P1-103", tipo:"3 Ambientes", m2:90},
   {code:"P3-303", tipo:"1 Ambiente", m2:36},
-  {code:"P5-503", tipo:"1 Ambiente", m2:36.14},
   {code:"P6-603", tipo:"1 Ambiente", m2:36.14},
   {code:"P7-701", tipo:"1 Ambiente", m2:40},
   {code:"P7-703", tipo:"1 Ambiente", m2:36.14},
-  {code:"P8-801", tipo:"1 Ambiente", m2:40},
+  {code:"P7-704", tipo:"1 Ambiente", m2:34},
   {code:"P8-802", tipo:"Monoambiente", m2:31},
-  {code:"P8-803", tipo:"3 Ambientes", m2:71},
-  {code:"P9-901", tipo:"1 Ambiente", m2:40},
-  {code:"P9-902", tipo:"Monoambiente", m2:31},
   {code:"P9-903", tipo:"3 Ambientes", m2:69},
   {code:"P10-1001", tipo:"1 Ambiente", m2:40},
   {code:"P10-1003", tipo:"3 Ambientes", m2:69},
-  {code:"P12-1201", tipo:"Monoambiente", m2:45},
+  {code:"P12-1201", tipo:"1 Ambiente", m2:45},
 ];
 
 function fmtUSD(v) {
@@ -160,33 +158,16 @@ function recalc() {
   document.getElementById('anticipo-val').textContent = anticipo + '%';
   document.getElementById('plazo-val').textContent = plazo + (plazo === 1 ? ' año' : ' años');
 
-  const isAmerican = sistema === 'americano';
-  document.getElementById('th-saldo').style.display = isAmerican ? '' : 'none';
-
-  const noteEl = document.getElementById('sistema-note');
-  if (isAmerican) {
-    noteEl.innerHTML = '<b>Sistema Americano:</b> La cuota mensual incluye únicamente intereses. El capital se abona en su totalidad al vencimiento del plazo.';
-  } else {
-    noteEl.innerHTML = '<b>Sistema Francés:</b> Cuota fija mensual que incluye capital e intereses. La cuota no cambia durante todo el plazo.';
-  }
-
   const priceM2 = priceForYears(plazo);
   const tbody = document.getElementById('tbody');
   tbody.innerHTML = '';
 
   for (const u of units) {
-    const valor = u.m2 * priceM2;
+    const contado = CONTADO_OVERRIDES[u.code] || u.m2 * PRICE_CONTADO;
+    const valor = contado * priceM2 / PRICE_CONTADO;
     const antUSD = valor * anticipo / 100;
     const principal = valor - antUSD;
-    let cuota, saldo;
-
-    if (isAmerican) {
-      cuota = principal * MONTHLY_RATE;
-      saldo = principal;
-    } else {
-      cuota = frenchPMT(principal, MONTHLY_RATE, plazo * 12);
-      saldo = 0;
-    }
+    const cuota = frenchPMT(principal, MONTHLY_RATE, plazo * 12);
 
     const tr = document.createElement('tr');
     tr.innerHTML =
@@ -195,13 +176,34 @@ function recalc() {
       `<td>${Math.round(u.m2)} m²</td>` +
       `<td>${fmtUSD(valor)}</td>` +
       `<td>${fmtUSD(antUSD)}</td>` +
-      `<td class="${isAmerican ? 'cuota-am' : 'cuota'}">${fmtUSD(cuota)}</td>` +
-      (isAmerican ? `<td class="saldo">${fmtUSD(saldo)}</td>` : '');
+      `<td class="cuota">${fmtUSD(cuota)}</td>`;
     tbody.appendChild(tr);
   }
 }
 
 recalc();
 </script>
+
+<!-- YouTube background music -->
+<div id="music-btn" onclick="toggleMusic()" style="position:fixed;bottom:20px;right:20px;width:44px;height:44px;
+  border-radius:50%;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3);font-size:20px;z-index:999;opacity:0.7;transition:opacity 0.3s;"
+  onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'" title="Música">&#9835;</div>
+<div id="yt-player" style="position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;"></div>
+<script>
+let ytPlayer=null, musicPlaying=false;
+function onYouTubeIframeAPIReady(){
+  ytPlayer=new YT.Player('yt-player',{height:'1',width:'1',
+    playerVars:{autoplay:0,loop:1,listType:'playlist',list:'PLcdVrLogl5LNtjDfax55lKivI7Wjfe0_f',controls:0},
+    events:{onReady:function(e){e.target.setVolume(15);},
+      onStateChange:function(e){if(e.data===YT.PlayerState.ENDED){e.target.playVideo();}}}});
+}
+function toggleMusic(){
+  if(!ytPlayer)return;
+  if(musicPlaying){ytPlayer.pauseVideo();document.getElementById('music-btn').innerHTML='&#9835;';musicPlaying=false;}
+  else{ytPlayer.playVideo();document.getElementById('music-btn').innerHTML='&#9646;&#9646;';musicPlaying=true;}
+}
+</script>
+<script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>

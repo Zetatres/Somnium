@@ -7,7 +7,9 @@
 <style>
 :root { --navy: #1B3A5C; --gold: #C49A3C; --light-gold: #F5E6C8; --dark: #333; --light: #f0f4f0; --white: #fff; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--dark); line-height: 1.6; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--dark); line-height: 1.6; position: relative; }
+body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: url('images/bg.jpg') center/cover no-repeat; opacity: 0.08; z-index: -1; pointer-events: none; }
 
 /* Hero */
 .hero { background: linear-gradient(135deg, var(--navy) 0%, #2a5580 100%); color: var(--white);
@@ -89,7 +91,7 @@ footer a { color: var(--gold); }
   <div class="section-divider"></div>
   <div class="features">
     <div class="feature-card">
-      <h3>15 Unidades</h3>
+      <h3>11 Unidades</h3>
       <p>Departamentos de 31 a 90 m², desde monoambientes hasta 3 ambientes. Todos listos para escriturar y completamente equipados.</p>
     </div>
     <div class="feature-card">
@@ -133,10 +135,9 @@ footer a { color: var(--gold); }
         </ul>
       </div>
       <div class="info-box">
-        <h3>Sistemas de Amortización</h3>
+        <h3>Sistema de Amortización</h3>
         <ul>
           <li><b>Francés:</b> Cuota fija mensual (capital + intereses)</li>
-          <li><b>Americano:</b> Intereses mensuales + capital al vencimiento</li>
           <li>Sin calificación bancaria</li>
           <li>Sin ajuste por inflación</li>
           <li>Aprobación inmediata</li>
@@ -162,7 +163,7 @@ footer a { color: var(--gold); }
       </div>
       <div class="download-card">
         <h3>Unidades Compactas</h3>
-        <p>31 a 40 m² &bull; 10 unidades disponibles con opciones de financiación detalladas.</p>
+        <p>31 a 40 m² &bull; 7 unidades disponibles con opciones de financiación detalladas.</p>
         <a href="propuestas/Somnium_Propuesta_Compactos.pdf" download>Descargar PDF</a>
       </div>
       <div class="download-card">
@@ -172,7 +173,7 @@ footer a { color: var(--gold); }
       </div>
       <div class="download-card">
         <h3>Unidades Premium</h3>
-        <p>71 a 90 m² &bull; 2 unidades con vistas por encima de la copa de los árboles.</p>
+        <p>90 m² &bull; 1 unidad con vistas por encima de la copa de los árboles.</p>
         <a href="propuestas/Somnium_Propuesta_Premium.pdf" download>Descargar PDF</a>
       </div>
       <div class="download-card">
@@ -191,5 +192,26 @@ footer a { color: var(--gold); }
   </p>
 </footer>
 
+<!-- YouTube background music -->
+<div id="music-btn" onclick="toggleMusic()" style="position:fixed;bottom:20px;right:20px;width:44px;height:44px;
+  border-radius:50%;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3);font-size:20px;z-index:999;opacity:0.7;transition:opacity 0.3s;"
+  onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'" title="Música">&#9835;</div>
+<div id="yt-player" style="position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;"></div>
+<script>
+let ytPlayer=null, musicPlaying=false;
+function onYouTubeIframeAPIReady(){
+  ytPlayer=new YT.Player('yt-player',{height:'1',width:'1',
+    playerVars:{autoplay:0,loop:1,listType:'playlist',list:'PLcdVrLogl5LNtjDfax55lKivI7Wjfe0_f',controls:0},
+    events:{onReady:function(e){e.target.setVolume(15);},
+      onStateChange:function(e){if(e.data===YT.PlayerState.ENDED){e.target.playVideo();}}}});
+}
+function toggleMusic(){
+  if(!ytPlayer)return;
+  if(musicPlaying){ytPlayer.pauseVideo();document.getElementById('music-btn').innerHTML='&#9835;';musicPlaying=false;}
+  else{ytPlayer.playVideo();document.getElementById('music-btn').innerHTML='&#9646;&#9646;';musicPlaying=true;}
+}
+</script>
+<script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
