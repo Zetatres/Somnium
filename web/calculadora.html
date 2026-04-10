@@ -184,24 +184,23 @@ function recalc() {
 recalc();
 </script>
 
-<!-- YouTube music mini-player -->
+<!-- Spotify music player -->
 <style>
-#music-bar{position:fixed;bottom:0;left:0;right:0;background:var(--navy);z-index:999;
-  display:flex;align-items:center;justify-content:center;gap:12px;padding:6px 16px;
-  box-shadow:0 -2px 12px rgba(0,0,0,0.3);border-top:2px solid var(--gold);}
-#music-bar .label{color:var(--gold);font-size:13px;font-weight:600;white-space:nowrap;}
-#music-bar iframe{border:0;border-radius:6px;}
-#music-bar .close-btn{color:var(--gold);cursor:pointer;font-size:18px;opacity:0.7;
-  transition:opacity 0.2s;padding:0 6px;}
-#music-bar .close-btn:hover{opacity:1;}
-.has-music-bar .footer{padding-bottom:60px;}
+#music-bar{position:fixed;bottom:0;left:0;right:0;z-index:999;
+  box-shadow:0 -2px 12px rgba(0,0,0,0.3);}
+#music-bar iframe{border-radius:0;display:block;}
+#music-close{position:absolute;top:8px;right:12px;color:#fff;cursor:pointer;font-size:16px;
+  opacity:0.6;transition:opacity 0.2s;z-index:1000;background:rgba(0,0,0,0.5);
+  border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;}
+#music-close:hover{opacity:1;}
+.has-music-bar .footer{padding-bottom:90px;}
 </style>
 <div id="music-bar">
-  <span class="label">&#9835; SOMNIUM</span>
-  <iframe width="280" height="36" allow="autoplay;encrypted-media"
-    src="https://www.youtube.com/embed/videoseries?list=PLcdVrLogl5LNtjDfax55lKivI7Wjfe0_f&autoplay=0&loop=1&rel=0"
-    id="yt-frame"></iframe>
-  <span class="close-btn" onclick="document.getElementById('music-bar').style.display='none';document.body.classList.remove('has-music-bar');" title="Cerrar">&#10005;</span>
+  <span id="music-close" onclick="document.getElementById('music-bar').style.display='none';document.body.classList.remove('has-music-bar');" title="Cerrar">&#10005;</span>
+  <iframe src="https://open.spotify.com/embed/album/7ti90Q0M8tWeYjl2wzY3On?utm_source=generator&theme=0"
+    width="100%" height="80" frameborder="0"
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy" style="border-radius:0"></iframe>
 </div>
 <script>document.body.classList.add('has-music-bar');</script>
 </body>
