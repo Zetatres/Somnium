@@ -184,42 +184,25 @@ function recalc() {
 recalc();
 </script>
 
-<!-- YouTube background music -->
+<!-- YouTube music mini-player -->
 <style>
-@keyframes pulse{0%,100%{opacity:0.85;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
-#music-box{position:fixed;bottom:20px;right:20px;z-index:999;}
-#music-btn{padding:10px 18px;border-radius:30px;background:var(--navy);color:var(--gold);
-  display:flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.4);
-  font-size:14px;transition:all 0.3s;border:2px solid var(--gold);animation:pulse 2s ease-in-out 3;
-  position:relative;z-index:2;}
-#music-btn:hover{transform:scale(1.05)}
-#yt-frame{position:absolute;bottom:0;right:0;width:1px;height:1px;opacity:0;pointer-events:none;}
-#yt-frame.active{width:300px;height:50px;opacity:0;pointer-events:auto;}
+#music-bar{position:fixed;bottom:0;left:0;right:0;background:var(--navy);z-index:999;
+  display:flex;align-items:center;justify-content:center;gap:12px;padding:6px 16px;
+  box-shadow:0 -2px 12px rgba(0,0,0,0.3);border-top:2px solid var(--gold);}
+#music-bar .label{color:var(--gold);font-size:13px;font-weight:600;white-space:nowrap;}
+#music-bar iframe{border:0;border-radius:6px;}
+#music-bar .close-btn{color:var(--gold);cursor:pointer;font-size:18px;opacity:0.7;
+  transition:opacity 0.2s;padding:0 6px;}
+#music-bar .close-btn:hover{opacity:1;}
+.has-music-bar .footer{padding-bottom:60px;}
 </style>
-<div id="music-box">
-  <div id="music-btn" onclick="toggleMusic()" title="Reproducir música">
-    <span style="font-size:20px">&#9835;</span> <span id="music-label">Escuchá SOMNIUM</span>
-  </div>
-  <iframe id="yt-frame" allow="autoplay;encrypted-media"
-    src="https://www.youtube.com/embed/zQ_CbVI5dBo?list=PLcdVrLogl5LNtjDfax55lKivI7Wjfe0_f&autoplay=0&loop=1&enablejsapi=1&origin=*&controls=0&showinfo=0&rel=0"
-    frameborder="0"></iframe>
+<div id="music-bar">
+  <span class="label">&#9835; SOMNIUM</span>
+  <iframe width="280" height="36" allow="autoplay;encrypted-media"
+    src="https://www.youtube.com/embed/zQ_CbVI5dBo?list=PLcdVrLogl5LNtjDfax55lKivI7Wjfe0_f&autoplay=0&loop=1&rel=0"
+    id="yt-frame"></iframe>
+  <span class="close-btn" onclick="document.getElementById('music-bar').style.display='none';document.body.classList.remove('has-music-bar');" title="Cerrar">&#10005;</span>
 </div>
-<script>
-let musicPlaying=false, ytFrame=document.getElementById('yt-frame');
-function toggleMusic(){
-  if(!musicPlaying){
-    ytFrame.src="https://www.youtube.com/embed/zQ_CbVI5dBo?list=PLcdVrLogl5LNtjDfax55lKivI7Wjfe0_f&autoplay=1&loop=1&controls=0&showinfo=0&rel=0";
-    ytFrame.classList.add('active');
-    document.getElementById('music-label').textContent='Pausar';
-    document.getElementById('music-btn').style.animation='none';
-    musicPlaying=true;
-  } else {
-    ytFrame.src="about:blank";
-    ytFrame.classList.remove('active');
-    document.getElementById('music-label').textContent='Escuchá SOMNIUM';
-    musicPlaying=false;
-  }
-}
-</script>
+<script>document.body.classList.add('has-music-bar');</script>
 </body>
 </html>
