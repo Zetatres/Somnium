@@ -131,11 +131,10 @@ const units = [
   {code:"P3-303", tipo:"1 Ambiente", m2:36},
   {code:"P6-603", tipo:"1 Ambiente", m2:36.14},
   {code:"P7-703", tipo:"1 Ambiente", m2:36.14},
-  {code:"P8-802", tipo:"Monoambiente", m2:31},
   {code:"P8-803", tipo:"3 Ambientes", m2:71.44},
   {code:"P9-903", tipo:"3 Ambientes", m2:69},
   {code:"P10-1001", tipo:"1 Ambiente", m2:40},
-  {code:"P10-1002", tipo:"Monoambiente", m2:31.06},
+  {code:"P10-1002", tipo:"Monoambiente", m2:31.06, financed:4050},
   {code:"P10-1003", tipo:"3 Ambientes", m2:69},
   {code:"P12-1201", tipo:"1 Ambiente", m2:45},
 ];
@@ -162,7 +161,7 @@ function recalc() {
   tbody.innerHTML = '';
 
   for (const u of units) {
-    const valor = u.m2 * priceM2;
+    const valor = u.financed ? u.m2 * u.financed : u.m2 * priceM2;
     const antUSD = valor * anticipo / 100;
     const principal = valor - antUSD;
     const cuota = frenchPMT(principal, MONTHLY_RATE, plazo * 12);

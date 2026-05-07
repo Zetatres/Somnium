@@ -62,6 +62,21 @@ section h2 { color: var(--navy); font-size: 1.8rem; margin-bottom: 1.5rem; text-
 .info-box li { padding: 0.3rem 0; font-size: 0.9rem; }
 .info-box li::before { content: "\2713"; color: var(--gold); font-weight: bold; margin-right: 0.5rem; }
 
+/* Units table */
+.units-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.units-table thead th { background: var(--navy); color: var(--white); padding: 0.6rem 0.5rem; text-align: center; font-size: 0.82rem; }
+.units-table tbody td { padding: 0.5rem; text-align: center; border-bottom: 1px solid #eee; }
+.units-table tbody tr:nth-child(even) { background: #f9f9f9; }
+.units-table tbody tr:hover { background: var(--light-gold); }
+.row-sold { background: #fff0f0 !important; }
+.row-sold s { color: #999; }
+.row-res { background: #eef0ff !important; }
+.row-res s { color: #999; }
+.st-disp { color: #2a7d2a; font-weight: 600; font-size: 0.82rem; }
+.st-sold { color: #cc0000; font-weight: 700; font-size: 0.82rem; }
+.st-res { color: var(--navy); font-weight: 700; font-size: 0.82rem; }
+.table-wrap { border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); background: var(--white); }
+
 /* Footer */
 footer { background: var(--navy); color: var(--white); text-align: center; padding: 2rem; }
 footer a { color: var(--gold); }
@@ -114,6 +129,39 @@ footer a { color: var(--gold); }
       <h3>Inversión Inteligente</h3>
       <p>Financiación directa en dólares a tasa fija del 11% anual. Sin bancos, sin UVA, sin ajuste por inflación.</p>
     </div>
+  </div>
+</section>
+
+<section id="unidades">
+  <h2>Unidades</h2>
+  <div class="section-divider"></div>
+  <div class="table-wrap" style="overflow-x:auto;">
+    <table class="units-table">
+      <thead>
+        <tr><th>Unidad</th><th>Tipo</th><th>Ubicación</th><th>m²</th><th>Valor Contado</th><th>Estado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>P1-102</td><td>Monoambiente</td><td>Frente</td><td>31</td><td>US$ 117.828</td><td><span class="st-disp">Disponible</span></td></tr>
+        <tr><td>P1-103</td><td>3 Ambientes</td><td>Contrafrente</td><td>90</td><td>US$ 342.000</td><td><span class="st-disp">Disponible</span></td></tr>
+        <tr class="row-sold"><td><s>P3-301</s></td><td><s>1 Ambiente</s></td><td><s>Frente</s></td><td><s>40</s></td><td><s>US$ 153.102</s></td><td><span class="st-sold">VENDIDO</span></td></tr>
+        <tr class="row-sold"><td><s>P3-302</s></td><td><s>Monoambiente</s></td><td><s>Frente</s></td><td><s>31</s></td><td><s>US$ 118.028</s></td><td><span class="st-sold">VENDIDO</span></td></tr>
+        <tr><td>P3-303</td><td>1 Ambiente</td><td>Contrafrente</td><td>36</td><td>US$ 136.800</td><td><span class="st-disp">Disponible</span></td></tr>
+        <tr class="row-sold"><td><s>P4-402</s></td><td><s>Monoambiente</s></td><td><s>Frente</s></td><td><s>31</s></td><td><s>US$ 118.028</s></td><td><span class="st-sold">VENDIDO</span></td></tr>
+        <tr class="row-sold"><td><s>P6-601</s></td><td><s>1 Ambiente</s></td><td><s>Frente</s></td><td><s>40</s></td><td><s>US$ 153.102</s></td><td><span class="st-sold">VENDIDO</span></td></tr>
+        <tr><td>P6-603</td><td>1 Ambiente</td><td>Contrafrente</td><td>36</td><td>US$ 137.332</td><td><span class="st-disp">Disponible</span></td></tr>
+        <tr class="row-sold"><td><s>P6-604</s></td><td><s>1 Ambiente</s></td><td><s>Frente</s></td><td><s>34</s></td><td><s>US$ 129.922</s></td><td><span class="st-sold">VENDIDO</span></td></tr>
+        <tr><td>P7-703</td><td>1 Ambiente</td><td>Contrafrente</td><td>36</td><td>US$ 137.332</td><td><span class="st-disp">Disponible</span></td></tr>
+        <tr class="row-res"><td><s>P7-704</s></td><td><s>1 Ambiente</s></td><td><s>Contrafrente</s></td><td><s>34</s></td><td><s>US$ 126.300</s></td><td><span class="st-res">RESERVADO</span></td></tr>
+        <tr class="row-sold"><td><s>P8-802</s></td><td><s>Monoambiente</s></td><td><s>Frente</s></td><td><s>31</s></td><td><s>US$ 120.125</s></td><td><span class="st-sold">VENDIDO</span></td></tr>
+        <tr><td>P8-803</td><td>3 Ambientes</td><td>Contrafrente</td><td>71</td><td>US$ 271.472</td><td><span class="st-disp">Disponible</span></td></tr>
+        <tr><td>P9-903</td><td>3 Ambientes</td><td>Contrafrente</td><td>69</td><td>US$ 262.200</td><td><span class="st-disp">Disponible</span></td></tr>
+        <tr><td>P10-1001</td><td>1 Ambiente</td><td>Frente</td><td>40</td><td>US$ 152.000</td><td><span class="st-disp">Disponible</span></td></tr>
+        <tr><td>P10-1002</td><td>Monoambiente</td><td>Frente</td><td>31</td><td>US$ 122.687</td><td><span class="st-disp">Disponible</span></td></tr>
+        <tr><td>P10-1003</td><td>3 Ambientes</td><td>Contrafrente</td><td>69</td><td>US$ 262.200</td><td><span class="st-disp">Disponible</span></td></tr>
+        <tr class="row-sold"><td><s>P11-1102</s></td><td><s>3 Ambientes</s></td><td><s>Contrafrente</s></td><td><s>65</s></td><td><s>US$ 248.368</s></td><td><span class="st-sold">VENDIDO</span></td></tr>
+        <tr><td>P12-1201</td><td>1 Ambiente</td><td>Frente</td><td>45</td><td>US$ 171.000</td><td><span class="st-disp">Disponible</span></td></tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
