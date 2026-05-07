@@ -124,19 +124,18 @@ function priceForYears(y) {
   return PRICES_BY_TERM[20];
 }
 
-// Contado price overrides (unit code -> USD)
-const CONTADO_OVERRIDES = {"P7-704": 126300};
-
+// Only available units (no vendido/reservado)
 const units = [
+  {code:"P1-102", tipo:"Monoambiente", m2:31.06},
   {code:"P1-103", tipo:"3 Ambientes", m2:90},
   {code:"P3-303", tipo:"1 Ambiente", m2:36},
   {code:"P6-603", tipo:"1 Ambiente", m2:36.14},
-  {code:"P7-701", tipo:"1 Ambiente", m2:40},
   {code:"P7-703", tipo:"1 Ambiente", m2:36.14},
-  {code:"P7-704", tipo:"1 Ambiente", m2:34},
   {code:"P8-802", tipo:"Monoambiente", m2:31},
+  {code:"P8-803", tipo:"3 Ambientes", m2:71.44},
   {code:"P9-903", tipo:"3 Ambientes", m2:69},
   {code:"P10-1001", tipo:"1 Ambiente", m2:40},
+  {code:"P10-1002", tipo:"Monoambiente", m2:31.06},
   {code:"P10-1003", tipo:"3 Ambientes", m2:69},
   {code:"P12-1201", tipo:"1 Ambiente", m2:45},
 ];
@@ -163,8 +162,7 @@ function recalc() {
   tbody.innerHTML = '';
 
   for (const u of units) {
-    const contado = CONTADO_OVERRIDES[u.code] || u.m2 * PRICE_CONTADO;
-    const valor = contado * priceM2 / PRICE_CONTADO;
+    const valor = u.m2 * priceM2;
     const antUSD = valor * anticipo / 100;
     const principal = valor - antUSD;
     const cuota = frenchPMT(principal, MONTHLY_RATE, plazo * 12);
