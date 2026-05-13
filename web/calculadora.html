@@ -160,7 +160,7 @@ function recalc() {
   tbody.innerHTML = '';
 
   for (const u of units) {
-    const valor = u.financed ? u.m2 * u.financed : u.m2 * priceM2;
+    const valor = u.financed ? u.financed : u.m2 * priceM2;
     const antUSD = valor * anticipo / 100;
     const principal = valor - antUSD;
     const cuota = frenchPMT(principal, MONTHLY_RATE, plazo * 12);
